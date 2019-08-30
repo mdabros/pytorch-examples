@@ -1,20 +1,13 @@
 '''Some helper functions for PyTorch, including:
     - get_mean_and_std: calculate the mean and std value of dataset.
-    - msr_init: net parameter initialization.
-    - save_checkpoint: save current best model (based on test loss)
+    - save_checkpoint: save current best model (based on test metric)
 '''
 import os
-import sys
-import math
-
 import torch
-import torch.nn as nn
-import torch.nn.init as init
-
 
 def get_mean_and_std(dataset):
     '''Compute the mean and std value of dataset.'''
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=True, num_workers=2)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0)
     mean = torch.zeros(3)
     std = torch.zeros(3)
     print('==> Computing mean and std..')
@@ -26,28 +19,20 @@ def get_mean_and_std(dataset):
     std.div_(len(dataset))
     return mean, std
 
-def init_params(net):
-    '''Init layer parameters.'''
-    for m in net.modules():
-        if isinstance(m, nn.Conv2d):
-            init.kaiming_normal(m.weight, mode='fan_out')
-            if m.bias:
-                init.constant(m.bias, 0)
-        elif isinstance(m, nn.BatchNorm2d):
-            init.constant(m.weight, 1)
-            init.constant(m.bias, 0)
-        elif isinstance(m, nn.Linear):
-            init.normal(m.weight, std=1e-3)
-            if m.bias:
-                init.constant(m.bias, 0)
-
-def save_checkpoint(epoch, model, test_loss):
+def save_checkpoint(epoch, model, test_metric):
     state = {
         'net': model.state_dict(),
-        'test_loss': test_loss,
+        'test_metric': test_metric,
         'epoch': epoch,
     }
 
     if not os.path.isdir('checkpoint'):
         os.mkdir('checkpoint')
     torch.save(state, './checkpoint/ckpt.pth')
+
+def save_onnx_model(model, dummy_input):
+    input_names = [ "actual_input_1" ] + [ name for name, param in model.named_parameters() ]
+    output_names = [ "output1" ]
+
+    torch.onnx.export(model, dummy_input, "./model.onnx", verbose=True, 
+                      input_names=input_names, output_names=output_names)

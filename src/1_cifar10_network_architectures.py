@@ -2,8 +2,6 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F
-import torch.backends.cudnn as cudnn
 
 import torchvision
 import torchvision.transforms as transforms
@@ -16,6 +14,7 @@ from models import *
 from trainer import Trainer
 from metrics import accuracy
 from utils import save_checkpoint
+from utils import save_onnx_model
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
@@ -23,7 +22,7 @@ parser.add_argument('--resume', '-r', action='store_true', help='resume from che
 args = parser.parse_args()
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-best_test_loss = float("inf")
+best_test_metric = 0
 start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 
 # Data
@@ -65,9 +64,9 @@ net = VGG('VGG11')
 # net = EfficientNetB0()
 net = net.to(device)
 
-if device == 'cuda':
-    net = torch.nn.DataParallel(net)
-    #cudnn.benchmark = True
+#if device == 'cuda':
+#    net = torch.nn.DataParallel(net) # Note, that It is not possible to save as ONNX model when using DataParallel (https://github.com/pytorch/pytorch/issues/13397)
+#    cudnn.benchmark = True # This enables specifc optimizations for the network architecture (said to work best for fixed sized inputs).
 
 if args.resume:
     # Load checkpoint.
@@ -88,7 +87,7 @@ trainer = Trainer(net, criterion, metric, optimizer, device)
 epochs = 50
 print("Training for {0} epochs...".format(epochs))
 
-for epoch in range(start_epoch, epochs):
+for epoch in range(start_epoch, start_epoch + epochs):
 
     start = time.time()
     (train_loss, train_metric) = trainer.train(trainloader)
@@ -97,11 +96,16 @@ for epoch in range(start_epoch, epochs):
 
     total_epoch_time = end - start
 
-    print("Epoch: {0} - Training Metric: {1} | Test Metric: {2} | Time: {3}"
-        .format(epoch, train_metric, test_metric, total_epoch_time))
+    print("Epoch: {0} | Total Epoch Time: {1} seconds: ".format(epoch, total_epoch_time))
+    print("    - Training Loss: {0} | Test Loss: {1}".format(train_loss, test_loss))
+    print("    - Training Metric: {0} | Test Metric: {1}".format(train_metric, test_metric))
 
     # Save checkpoint if new best model.
-    if test_loss < best_test_loss:
-        save_checkpoint(epoch, trainer.model, test_loss)
-        best_test_loss = test_loss
-        print("Saving best checkpoint: New best test loss {0}".format(best_test_loss))
+    if test_metric > best_test_metric:
+        save_checkpoint(epoch, trainer.model, test_metric)
+        best_test_metric = test_metric
+        print("Saving best checkpoint: New best test score {0}".format(best_test_metric))
+
+# Save model as onnx.
+dummy_input = torch.randn(10, 3, 32, 32, device='cuda')
+save_onnx_model(trainer.model, dummy_input)
