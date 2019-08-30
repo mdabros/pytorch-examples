@@ -60,6 +60,8 @@ class Trainer(object):
         metric_sum = 0.0
         N = 0
 
+        self.model.eval()
+
         outputs_data = list()
         targets_data = list()
 

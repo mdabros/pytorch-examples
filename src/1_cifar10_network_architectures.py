@@ -3,12 +3,16 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
+from torch.backends import cudnn
+
 import torchvision
 import torchvision.transforms as transforms
 
 import os
 import argparse
 import time
+import random
+import numpy as np
 
 from models import *
 from trainer import Trainer
@@ -22,8 +26,20 @@ parser.add_argument('--resume', '-r', action='store_true', help='resume from che
 args = parser.parse_args()
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-best_test_metric = 0
-start_epoch = 0  # start from epoch 0 or last checkpoint epoch
+
+# Set manaul seed for reproducibility (https://pytorch.org/docs/stable/notes/randomness.html).
+# Note, that random.seed and np.random.seed needs to be set, since they are used by external code.
+seed = 113
+torch.manual_seed(seed)
+random.seed(seed)
+np.random.seed(seed)
+
+if device == 'cuda':   
+    # Ensure reproducibility with CUDA
+    torch.cuda.manual_seed(seed)
+    cudnn.deterministic = True
+    cudnn.benchmark = False
+    # net = torch.nn.DataParallel(net) # Note, that It is not possible to save as ONNX model when using DataParallel (https://github.com/pytorch/pytorch/issues/13397)
 
 # Data
 print('==> Preparing data..')
@@ -49,7 +65,8 @@ classes = ('plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship'
 
 # Model
 print('==> Building model..')
-net = VGG('VGG11')
+net = LeNet()
+# net = VGG('VGG11')
 # net = ResNet18()
 # net = PreActResNet18()
 # net = GoogLeNet()
@@ -64,9 +81,8 @@ net = VGG('VGG11')
 # net = EfficientNetB0()
 net = net.to(device)
 
-#if device == 'cuda':
-#    net = torch.nn.DataParallel(net) # Note, that It is not possible to save as ONNX model when using DataParallel (https://github.com/pytorch/pytorch/issues/13397)
-#    cudnn.benchmark = True # This enables specifc optimizations for the network architecture (said to work best for fixed sized inputs).
+best_test_metric = 0
+start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 
 if args.resume:
     # Load checkpoint.
