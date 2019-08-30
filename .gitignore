@@ -53,15 +53,8 @@ src/data
 # Model directories
 src/checkpoint
 
-# Translations
-# Data directories
-src/MNIST-data
-src/tensorflow-examples/Scripts
-
-# Model directories
-src/cnn-model/*
-src/transfer-learn-model/*
-*.h5
+# ONNX Files
+*.onnx
 
 # environment files
 src/tensorflow-examples/pip-selfcheck.json

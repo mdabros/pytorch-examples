@@ -2,10 +2,11 @@
 import torch
 
 class Trainer(object):
-    def __init__(self, model, criterion, optimizer, device):
+    def __init__(self, model, criterion, metric, optimizer, device):
         
         self.model = model
         self.criterion = criterion
+        self.metric = metric
         self.optimizer = optimizer
         self.device = device
         
@@ -22,8 +23,11 @@ class Trainer(object):
         '''
 
         loss_sum = 0.0
+        metric_sum = 0.0
         N = 0
+
         self.model.train()
+        
         outputs_data = list()
         targets_data = list()
 
@@ -43,16 +47,19 @@ class Trainer(object):
             self.optimizer.step()
 
             loss_sum += loss.item() * batch_size
+            metric_sum += self.metric(outputs, targets) * batch_size
             N += batch_size
 
-        return loss_sum / N
+        return (loss_sum / N, metric_sum / N)
 
 
     def evaluate(self, test_loader):
         self.model.eval()
 
         loss_sum = 0.0
+        metric_sum = 0.0
         N = 0
+
         outputs_data = list()
         targets_data = list()
 
@@ -67,6 +74,7 @@ class Trainer(object):
                 loss = self.criterion(outputs, targets)
                 
                 loss_sum += loss.item() * batch_size
+                metric_sum += self.metric(outputs, targets) * batch_size
                 N += batch_size
 
-        return loss_sum / N
+        return (loss_sum / N, metric_sum / N)
