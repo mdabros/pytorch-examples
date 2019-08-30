@@ -22,6 +22,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="metrics.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="models\densenet.py" />
     <Compile Include="models\dpn.py" />
     <Compile Include="models\efficientnet.py" />

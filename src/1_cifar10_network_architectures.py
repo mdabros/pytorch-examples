@@ -14,6 +14,7 @@ import time
 
 from models import *
 from trainer import Trainer
+from metrics import accuracy
 from utils import save_checkpoint
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
@@ -79,8 +80,9 @@ if args.resume:
 
 # Setup trainer.
 criterion = nn.CrossEntropyLoss()
+metric = accuracy
 optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
-trainer = Trainer(net, criterion, optimizer, device)
+trainer = Trainer(net, criterion, metric, optimizer, device)
 
 # Run training loop.
 epochs = 50
@@ -89,14 +91,14 @@ print("Training for {0} epochs...".format(epochs))
 for epoch in range(start_epoch, epochs):
 
     start = time.time()
-    train_loss = trainer.train(trainloader)
-    test_loss = trainer.evaluate(testloader)
+    (train_loss, train_metric) = trainer.train(trainloader)
+    (test_loss, test_metric) = trainer.evaluate(testloader)
     end = time.time()
 
     total_epoch_time = end - start
 
-    print("Epoch: {0} - Training Loss: {1} | Test Loss: {2} | Time: {3}"
-        .format(epoch, train_loss, test_loss, total_epoch_time))
+    print("Epoch: {0} - Training Metric: {1} | Test Metric: {2} | Time: {3}"
+        .format(epoch, train_metric, test_metric, total_epoch_time))
 
     # Save checkpoint if new best model.
     if test_loss < best_test_loss:
