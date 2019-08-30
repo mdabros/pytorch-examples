@@ -106,6 +106,12 @@ for epoch in range(start_epoch, start_epoch + epochs):
         best_test_metric = test_metric
         print("Saving best checkpoint: New best test score {0}".format(best_test_metric))
 
-# Save model as onnx.
+# Load best model.
+assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
+checkpoint = torch.load('./checkpoint/ckpt.pth')
+net.load_state_dict(checkpoint['net'])
+
+# Save best model as onnx.
+print("Saving best model in ONNX format...")
 dummy_input = torch.randn(10, 3, 32, 32, device='cuda')
-save_onnx_model(trainer.model, dummy_input)
+save_onnx_model(net, dummy_input)

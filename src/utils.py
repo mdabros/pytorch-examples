@@ -1,6 +1,7 @@
 '''Some helper functions for PyTorch, including:
     - get_mean_and_std: calculate the mean and std value of dataset.
-    - save_checkpoint: save current best model (based on test metric)
+    - save_checkpoint: save current best model (based on test metric).
+    - save_onnx_model: save final model in onnx format.
 '''
 import os
 import torch
@@ -30,9 +31,9 @@ def save_checkpoint(epoch, model, test_metric):
         os.mkdir('checkpoint')
     torch.save(state, './checkpoint/ckpt.pth')
 
-def save_onnx_model(model, dummy_input):
+def save_onnx_model(model, dummy_input, verbose=False):
     input_names = [ "actual_input_1" ] + [ name for name, param in model.named_parameters() ]
     output_names = [ "output1" ]
 
-    torch.onnx.export(model, dummy_input, "./model.onnx", verbose=True, 
+    torch.onnx.export(model, dummy_input, "./model.onnx", verbose=verbose, 
                       input_names=input_names, output_names=output_names)
