@@ -25,7 +25,9 @@ class Trainer(object):
         loss_sum = 0.0
         metric_sum = 0.0
         N = 0
+
         self.model.train()
+        
         outputs_data = list()
         targets_data = list()
 
@@ -57,6 +59,7 @@ class Trainer(object):
         loss_sum = 0.0
         metric_sum = 0.0
         N = 0
+
         outputs_data = list()
         targets_data = list()
 
@@ -69,9 +72,9 @@ class Trainer(object):
 
                 outputs = self.model(data)
                 loss = self.criterion(outputs, targets)
-                metric_sum += self.metric(outputs, targets) * batch_size
                 
                 loss_sum += loss.item() * batch_size
+                metric_sum += self.metric(outputs, targets) * batch_size
                 N += batch_size
 
         return (loss_sum / N, metric_sum / N)
