@@ -5,7 +5,7 @@ Repository for pytorch examples and experiments.
 
 ## Examples
 
- * [**1_cifar10_model_architectures**](https://github.com/mdabros/pytorch-examples/src/1_cifar10_network_architectures.py): Trains the selected network architecture on the CIFAR10 dataset.
+ * [**1_cifar10_model_architectures**](src/1_cifar10_network_architectures.py): Trains the selected network architecture on the CIFAR10 dataset.
  
 ## Installation
 
