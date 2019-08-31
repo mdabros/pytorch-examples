@@ -3,22 +3,17 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-from torch.backends import cudnn
-
 import torchvision
 import torchvision.transforms as transforms
 
 import os
 import argparse
 import time
-import random
-import numpy as np
 
 from models import *
 from trainer import Trainer
 from metrics import accuracy
-from utils import save_checkpoint
-from utils import save_onnx_model
+from utils import *
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
@@ -27,19 +22,7 @@ args = parser.parse_args()
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-# Set manaul seed for reproducibility (https://pytorch.org/docs/stable/notes/randomness.html).
-# Note, that random.seed and np.random.seed needs to be set, since they are used by external code.
-seed = 113
-torch.manual_seed(seed)
-random.seed(seed)
-np.random.seed(seed)
-
-if device == 'cuda':   
-    # Ensure reproducibility with CUDA
-    torch.cuda.manual_seed(seed)
-    cudnn.deterministic = True
-    cudnn.benchmark = False
-    # net = torch.nn.DataParallel(net) # Note, that It is not possible to save as ONNX model when using DataParallel (https://github.com/pytorch/pytorch/issues/13397)
+set_seeds_for_reproducible_mode(seed=113, device=device)
 
 # Data
 print('==> Preparing data..')
