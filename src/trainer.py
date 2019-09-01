@@ -26,7 +26,7 @@ class Trainer(object):
         metric_sum = 0.0
         N = 0
 
-        self.model.train()
+        self.model.train() # Set model to training mode.
         
         outputs_data = list()
         targets_data = list()
@@ -60,7 +60,7 @@ class Trainer(object):
         metric_sum = 0.0
         N = 0
 
-        self.model.eval()
+        self.model.eval() # Set model to evaluate mode.
 
         outputs_data = list()
         targets_data = list()
