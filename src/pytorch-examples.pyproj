@@ -5,7 +5,7 @@
     <ProjectGuid>c47e4177-08db-44dd-ab4b-f4c4549dcae3</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>1_cifar10_network_architectures.py</StartupFile>
+    <StartupFile>2_faces_data_loading_and_processing.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,10 +22,17 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="2_faces_data_loading_and_processing.py" />
+    <Compile Include="face_landmarks_dataset.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="metrics.py" />
     <Compile Include="models\densenet.py" />
     <Compile Include="models\dpn.py" />
     <Compile Include="models\efficientnet.py" />
+    <Compile Include="models\faces.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="models\googlenet.py" />
     <Compile Include="models\lenet.py" />
     <Compile Include="models\mobilenet.py" />
