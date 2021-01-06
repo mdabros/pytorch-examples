@@ -373,7 +373,7 @@ def test_accuracy(net, device="cpu"):
 # The full main function looks like this:
 
 
-def main(num_samples=10, max_num_epochs=10, gpus_per_trial=2):
+def main(num_samples=10, max_num_epochs=10, gpus_per_trial=1):
     data_dir = os.path.abspath("./data")
     load_data(data_dir)
     config = {
@@ -393,7 +393,7 @@ def main(num_samples=10, max_num_epochs=10, gpus_per_trial=2):
         metric_columns=["loss", "accuracy", "training_iteration"])
     result = tune.run(
         partial(train_cifar, data_dir=data_dir),
-        resources_per_trial={"cpu": 2, "gpu": gpus_per_trial},
+        resources_per_trial={"cpu": 1, "gpu": gpus_per_trial},
         config=config,
         num_samples=num_samples,
         scheduler=scheduler,
@@ -425,7 +425,7 @@ def main(num_samples=10, max_num_epochs=10, gpus_per_trial=2):
 
 if __name__ == "__main__":
     # You can change the number of GPUs per trial here:
-    main(num_samples=10, max_num_epochs=10, gpus_per_trial=0)
+    main(num_samples=10, max_num_epochs=10, gpus_per_trial=1)
 
 
 ######################################################################
