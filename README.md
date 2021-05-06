@@ -6,6 +6,7 @@ Repository for pytorch examples and experiments.
 ## Examples
 
  * [**1_cifar10_model_architectures**](src/1_cifar10_network_architectures.py): Trains the selected network architecture on the CIFAR10 dataset.
+ * [**2_pytorch_hyperparameter_tuning_with_ray**](src/2_pytorch_hyperparameter_tuning_with_ray.py): Search for optimizer hyperparameters using Ray on the CIFAR10 dataset.
  
 ## Installation
 
