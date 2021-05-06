@@ -24,6 +24,9 @@ Install required packages:
  * Start Visual Studio, open **Python Environments**
  * Select **Python 3.6 (64-bit)**
  * On the **Overview** combo box select **Install from requirements.txt**
+   * Note, for specific versions of cuda, modify the requirements.txt file
+     before installing the requirements. Version in requirements.txt is `cu101`.
+     To get the latest version, leave out the cuda version.
  
 ### Installing cuDNN
 For the gpu version, make sure to check which version of cuda and cuDNN is supported. 
