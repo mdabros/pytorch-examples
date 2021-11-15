@@ -1,7 +1,7 @@
 certifi==2019.6.16
 numpy==1.17.1
 Pillow==6.2.0
-pip==18.1
+pip==21.1
 pipenv==2018.11.26
 PyYAML==5.1.2
 setuptools==41.2.0
